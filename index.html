@@ -203,12 +203,24 @@
         </details> 
         </div>`;
 
+        // input section nam validation
         if (inputValue === "") {
-          alert("You must write something!");
+          alert("You must give a name to your section");
+          return false;
+        }
+              let blockSpecialRegex = /[~`!@#$%^&()_={}[\]:;,.<>+\/?-]/;
+              let numbers = /^[0-9][A-Za-z0-9 -]*$/;
+        if (inputValue.match(blockSpecialRegex)) {
+          alert('Characters are not accepted as section name');
+          return false;
+        }
+                if (inputValue.match(numbers)) {
+          alert('Numbers are not accepted as section name');
           return false;
         }
         if (sections.find((element) => element === inputValue)) {
           alert("You already used that section name");
+          return false;
         } else {
           document.getElementById("myUL").appendChild(li);
           const newPage = document.createElement("div");
