@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      overflow-x: hidden;
+      font-family: "Raleway", sans-serif;
+    }
+
+    #root {
+      width: 100vw;
+    }
+    .pageToDownload{
+      width: 100vw;
+      height: 100%;
+      background-color: rgb(255, 255, 255);
+    }
+    span {
+      font-size: 23px;
+    }
+
+    .fixedSection {
+      height: 100%;
+      position: fixed;
+      right: 0;
+      width: 25vw;
+      z-index: 1;
+    }
+    li {
+      position: relative;
+      padding: 5px;
+      width: 23vw;
+      font-weight: 800;
+      background-color: white;
+      line-height: 2;
+      border-radius: 10px;
+      background-color: rgba(255, 255, 255, 0.666);
+      margin-top: 15px;
+      border: 1px solid grey;
+    }
+    .close {
+      position: absolute;
+      right: 4px;
+      top: 0;
+    }
+    textarea {
+      overflow: auto;
+    }
+    summary{color:rgb(39, 39, 39);}
+    summary:focus {
+      background-color: rgb(240, 240, 240);
+      border-radius: 10px;
+      outline: none;
+      border: none;
+    }
+    button{
+      background-color:transparent;
+      padding: 5px;
+      outline: none;
+      border: 1px solid rgb(39, 39, 39);
+      border-radius: 10px;
+      font-weight: 800;
+    }
+
+    @keyframes newSection {
+      50%{width: 300px; height: 300px; background-color: rgb(0, 0, 0);}
+    }
+  </style>
+
+  <body>
+    <div id="root"></div>
+    <script>
+      //delete all session storage values when page is refreshed or loads for 1st time
+      sessionStorage.clear();
+      const root = document.querySelector("#root");
+
+      //Edit page , create new li
+      function renderFirstPage() {
+        const page = `<div class="fixedSection">
+          <div id="myDIV" class="header">
+           <div class="buttons"><button onclick="openFullscreen();">Open Fullscreen</button>
+           <button onclick="download()">download</button></div>
+           Create sections
+           <input type="text" id="myInput" placeholder="page...">
+           <span onclick="newElement()" class="addBtn">&#10010;</span>
+           </div>
+           <ul id="myUL">
+           </ul>
+           </div>
+           <div class="smallPreview">
+           <div class="pageToDownload">
+           </div>
+           </div>
+           </div>`;
+        root.innerHTML = page;
+      }
+      renderFirstPage();
+
+      //super usefull array of all user input element class name , helps to loop everywhere bellow
+      const AllClasses = [
+        "title",
+        "TitleColor",
+        "TopTitle",
+        "LeftTitle",
+        "TitleSize",
+        "text",
+        "FontSize",
+        "TextColor",
+        "Bheight",
+        "Bwidth",
+        "Bopacity",
+        "LeftB",
+        "TopB",
+        "Bcolor",
+        "BborderC",
+        "Bborder",
+        "Bimage",
+        "BimageFromC",
+        "LeftText",
+        "TopText",
+      ];
+
+      // Create a "close" button and append it to each section item
+      const myNodelist = document.getElementsByTagName("LI");
+      let i;
+      for (i = 0; i < myNodelist.length; i++) {
+        const span = document.createElement("SPAN");
+        const txt = document.createTextNode("\u00D7");
+        span.className = "close";
+        span.appendChild(txt);
+        myNodelist[i].appendChild(span);
+      }
+
+      // Click on a close button to remove the current section item
+      const close = document.getElementsByClassName("close");
+      for (i = 0; i < close.length; i++) {
+        close[i].onclick = function () {
+          const div = this.parentElement;
+          div.style.display = "none";
+        };
+      }
+      // Create a new li item when clicking on the "Add" button
+      const sections = [];
+      function newElement() {
+        const li = document.createElement("li");
+        const inputValue = document.getElementById("myInput").value;
+        li.innerHTML = `<div class="${inputValue}" >
+        <h3>section:${inputValue}</h3>
+        <details> 
+        <br> 
+        <summary>Background</summary>
+        Section background color
+        <input oninput="renderSmall(event)" class="Bcolor" type="color"  value="#999999" />
+        Height of section
+        <input oninput="renderSmall(event)" class="Bheight" type="range" min="0" max="900" value="20" />
+        Width of section
+        <input oninput="renderSmall(event)" class="Bwidth" type="range" min="0" max="100" value="10" />
+        Position from left
+        <input type="range" class="LeftB" min="0" max="2000" value="10" oninput="renderSmall(event)" />
+        Position from Top
+        <input type="range" class="TopB" min="0" max="3000" value="0" oninput="renderSmall(event)" />
+        Border
+        <input oninput="renderSmall(event)" class="Bborder" type="range" min="0" max="1000" value="0" /><br>
+        Border color
+        <input oninput="renderSmall(event)" class="BborderC" type="color"  value="#000000" /><br>
+        Opacity
+        <input oninput="renderSmall(event)" class="Bopacity" type="range" min="0" max="100" value="100" /><br>
+        Add image url
+        <input type = "text" oninput="renderSmall(event)"class="Bimage" /><br>
+        Add image from your machine
+        <input type="file" oninput="renderSmall(event)" class="BimageFromC" name="myImage" accept="image/x-png,image/gif,image/jpeg" />  
+        </details> 
+        <details>  
+        <summary>Content</summary>
+        <br>
+        Add a title
+        <textarea wrap="off" oninput="renderSmall(event)" class="title" rows="4" cols="50" value=""></textarea>
+        Title color
+        <input oninput="renderSmall(event)" class="TitleColor" type="color"  value="#999999" /><br>
+          Title size
+          <input type="range" class="TitleSize" min="10" max="200" value="20" oninput="renderSmall(event)" /><br>
+          Position from left
+          <input type="range" class="LeftTitle" min="-1000" max="2000" value="10" oninput="renderSmall(event)" /><br>
+          Position from top
+          <input type="range" class="TopTitle" min="-2000" max="2000" value="10" oninput="renderSmall(event)" /><br>
+        Add a paragraph
+        <textarea wrap="off" oninput="renderSmall(event)" class="text" rows="4" cols="50" value=""></textarea>
+        Paragraph color
+        <input oninput="renderSmall(event)" class="TextColor" type="color"  value="#999999" /><br>
+          font size
+          <input type="range" class="FontSize" min="10" max="200" value="20" oninput="renderSmall(event)" /><br>
+          position from left
+          <input type="range" class="LeftText" min="20" max="2000" value="10" oninput="renderSmall(event)" /><br>
+          position from top
+          <input type="range" class="TopText" min="20" max="2000" value="10" oninput="renderSmall(event)" />
+        </details> 
+        </div>`;
+
+        if (inputValue === "") {
+          alert("You must write something!");
+          return false;
+        }
+        if (sections.find((element) => element === inputValue)) {
+          alert("You already used that section name");
+        } else {
+          document.getElementById("myUL").appendChild(li);
+          const newPage = document.createElement("div");
+          newPage.className = inputValue;
+          document.querySelector(".pageToDownload").appendChild(newPage);
+          renderPage(inputValue);
+          //scroll to top when u create new section in height is big to remind that the new  is on tp
+          document.body.scrollTop = 0; // For Safari
+          document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+          sections.push(inputValue);
+          //close html details
+          const details = document.querySelectorAll("details");
+          for (i = 0; i < details.length; i++) {
+            details[i].removeAttribute("open");
+          }
+          //scroll to current li edit section
+          li.scrollIntoView({ behavior: "smooth" });
+        }
+        //remove previous input create section value
+        document.getElementById("myInput").value = "";
+
+        const span = document.createElement("SPAN");
+        const txt = document.createTextNode("\u00D7");
+        span.className = "close";
+        span.appendChild(txt);
+        li.appendChild(span);
+
+        for (i = 0; i < close.length; i++) {
+          close[i].onclick = function () {
+            const div = this.parentElement;
+
+            //loop throught array of classes and delete all session storage values with current className
+            for (let i = 0; i < AllClasses.length; i++) {
+              sessionStorage.removeItem(
+                `${div.firstChild.className}-${AllClasses[i]}`
+              );
+            }
+
+            //remove dom elements both li and preview section
+            document
+              .querySelector(`.pageToDownload .${div.firstChild.className}`)
+              .remove();
+            div.remove();
+
+            //remove the preview section section which is stored in section array
+            const index = sections.indexOf(div.firstChild.className);
+            if (index > -1) {
+              sections.splice(index, 1);
+            }
+          };
+        }
+      }
+
+      //live update of preview page for css and content values
+      //loop throught all class array and create session storage values
+      function renderSmall(e) {
+        const kaka = e.currentTarget.parentElement.parentElement.className;
+        document
+          .querySelector(`.pageToDownload .${kaka}`)
+          .scrollIntoView({ behavior: "smooth" });
+        for (let i = 0; i < AllClasses.length; i++) {
+          if (e.target.className === "BimageFromC" && e.target.files[0].name) {
+            randomvar = URL.createObjectURL(event.target.files[0]);
+            sessionStorage.setItem(
+              `${kaka}-${e.currentTarget.className}`,
+              randomvar
+            );
+          }
+          if (e.currentTarget.className === AllClasses[i]) {
+            randomvar = e.currentTarget.value;
+            sessionStorage.setItem(
+              `${kaka}-${e.currentTarget.className}`,
+              randomvar
+            );
+          }
+        }
+        if (e.currentTarget.className === "Bcolor") {
+          Bcolor = e.currentTarget.value;
+          sessionStorage.setItem(`${kaka}-Bcolor`, Bcolor);
+          sessionStorage.removeItem(`${kaka}-Bimage`);
+          document.querySelector(`.Bimage`).value = null;
+          sessionStorage.removeItem(`${kaka}-BimageFromC`);
+          document.querySelector(`.BimageFromC`).value = null;
+        }
+
+        renderPage(kaka);
+      }
+
+      //check the user add and image url , if yes, set it as a background
+      function imageExists(x) {
+        if (
+          sessionStorage.getItem(`${x}-Bimage`) ||
+          sessionStorage.getItem(`${x}-BimageFromC`)
+        ) {
+          return `
+        background-image:url("${
+          sessionStorage.getItem(`${x}-Bimage`) ||
+          sessionStorage.getItem(`${x}-BimageFromC`)
+        }") ;  
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;
+        background-position: center;
+            `;
+        }
+      }
+      //rendering page on input event on each input or texteria
+      function renderPage(kaka) {
+        //SECTION style
+        document.querySelector(`.pageToDownload .${kaka}`).style.cssText = `
+        height:${
+          sessionStorage.getItem(`${kaka}-Bheight`)
+            ? `${sessionStorage.getItem(`${kaka}-Bheight`)}vh`
+            : `40px`
+        }; 
+        width:${
+          sessionStorage.getItem(`${kaka}-Bwidth`)
+            ? `${sessionStorage.getItem(`${kaka}-Bwidth`)}vw`
+            : `40px`
+        };
+        background-color:${
+          sessionStorage.getItem(`${kaka}-Bcolor`)
+            ? `${sessionStorage.getItem(`${kaka}-Bcolor`)}`
+            : `#999999`
+        };
+        opacity:${sessionStorage.getItem(`${kaka}-Bopacity`) ? sessionStorage.getItem(`${kaka}-Bopacity`) / 100 : `1`} ;
+        position:absolute;
+        overflow:visible;
+        left:${
+          sessionStorage.getItem(`${kaka}-LeftB`)
+            ? `${sessionStorage.getItem(`${kaka}-LeftB`)}px`
+            : `0px`
+        };
+        top:${
+          sessionStorage.getItem(`${kaka}-TopB`)
+            ? `${sessionStorage.getItem(`${kaka}-TopB`)}px`
+            : `0px`
+        };
+        ${imageExists(kaka)};
+        border:${
+          sessionStorage.getItem(`${kaka}-Bborder`)
+            ? `${sessionStorage.getItem(`${kaka}-Bborder`)}px`
+            : `0px`} solid ${sessionStorage.getItem(`${ kaka }-BborderC`)
+            ? `${ sessionStorage.getItem(`${kaka}-BborderC`) }`
+            : `#000000`};
+        animation: newSection 2s forwards;
+              `;
+
+        //section content
+        document.querySelector(`.pageToDownload .${kaka}`).innerHTML = `
+        <pre> ${
+          sessionStorage.getItem(`${kaka}-title`)
+            ? sessionStorage.getItem(`${kaka}-title`)
+            : ``
+        }</pre>
+        <pre> ${
+          sessionStorage.getItem(`${kaka}-text`)
+            ? sessionStorage.getItem(`${kaka}-text`)
+            : ``
+        }</pre>`;
+
+        //title style
+
+        document.querySelectorAll(
+          `.pageToDownload .${kaka} pre`
+        )[0].style.cssText = `
+        position:absolute;
+         font-weight: 900;
+        color:${sessionStorage.getItem(`${kaka}-TitleColor`)};
+        font-size:${sessionStorage.getItem(`${kaka}-TitleSize`)}px;
+        left:${sessionStorage.getItem(`${kaka}-LeftTitle`)}px; 
+        top:${sessionStorage.getItem(`${kaka}-TopTitle`)}px;
+                                           `;
+        //paragraph style
+        document.querySelectorAll(
+          `.pageToDownload .${kaka} pre`
+        )[1].style.cssText = `
+        position:absolute;
+        color:${sessionStorage.getItem(`${kaka}-TextColor`)};
+        font-size:${sessionStorage.getItem(`${kaka}-FontSize`)}px;
+        left:${sessionStorage.getItem(`${kaka}-LeftText`)}px; 
+        top:${sessionStorage.getItem(`${kaka}-TopText`)}px;
+                                           `;
+      }
+
+      //full screen on click
+      const elem = document.querySelector(`.smallPreview`);
+      function openFullscreen() {
+        if (elem.requestFullscreen) {
+          elem.requestFullscreen();
+        } else if (elem.webkitRequestFullscreen) {
+          /* Safari */
+          elem.webkitRequestFullscreen();
+        } else if (elem.msRequestFullscreen) {
+          /* IE11 */
+          elem.msRequestFullscreen();
+        }
+      }
+
+      //download the page
+      function download() {
+        const pageToDownload = `<!DOCTYPE html><html lang="en">
+        <style>
+        *{
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        overflow-x: hidden;
+        }
+        </style>
+        <body style="margin:0;padding:0; overflow-x: hidden;">
+        ${document.querySelector(".pageToDownload").innerHTML}</body></html>`;
+        fileToDownload(pageToDownload);
+      }
+
+      //file to be downloaded
+      function fileToDownload(pageCodeToDownload) {
+        const element = document.createElement("a");
+        element.setAttribute(
+          "href",
+          "data:text/plain;charset=utf-8," +
+            encodeURIComponent(pageCodeToDownload)
+        );
+        element.setAttribute("download", "index.html");
+        element.style.display = "none";
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
+      }
+      //create new section with enter button
+      const wage = document.getElementById("myInput");
+      wage.addEventListener("keydown", (e) => {
+        if (e.keyCode === 13) {
+          //checks whether the pressed key is "Enter"
+          newElement();
+        }
+      });
+    </script>
+  </body>
+</html>
