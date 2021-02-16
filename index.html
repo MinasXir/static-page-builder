@@ -3,77 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Static page builder</title>
+    <link rel="stylesheet" href="style.css" />
   </head>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      overflow-x: hidden;
-      font-family: "Raleway", sans-serif;
-    }
-
-    #root {
-      width: 100vw;
-    }
-    .pageToDownload{
-      width: 100vw;
-      height: 100%;
-      background-color: rgb(255, 255, 255);
-    }
-    span {
-      font-size: 23px;
-    }
-
-    .fixedSection {
-      height: 100%;
-      position: fixed;
-      right: 0;
-      width: 25vw;
-      z-index: 1;
-    }
-    li {
-      position: relative;
-      padding: 5px;
-      width: 23vw;
-      font-weight: 800;
-      background-color: white;
-      line-height: 2;
-      border-radius: 10px;
-      background-color: rgba(255, 255, 255, 0.666);
-      margin-top: 15px;
-      border: 1px solid grey;
-    }
-    .close {
-      position: absolute;
-      right: 4px;
-      top: 0;
-    }
-    textarea {
-      overflow: auto;
-    }
-    summary{color:rgb(39, 39, 39);}
-    summary:focus {
-      background-color: rgb(240, 240, 240);
-      border-radius: 10px;
-      outline: none;
-      border: none;
-    }
-    button{
-      background-color:transparent;
-      padding: 5px;
-      outline: none;
-      border: 1px solid rgb(39, 39, 39);
-      border-radius: 10px;
-      font-weight: 800;
-    }
-
-    @keyframes newSection {
-      50%{width: 300px; height: 300px; background-color: rgb(0, 0, 0);}
-    }
-  </style>
-
   <body>
     <div id="root"></div>
     <script>
@@ -165,7 +97,7 @@
         Position from left
         <input type="range" class="LeftB" min="0" max="2000" value="10" oninput="renderSmall(event)" />
         Position from Top
-        <input type="range" class="TopB" min="0" max="3000" value="0" oninput="renderSmall(event)" />
+        <input type="range" class="TopB" min="0" max="6000" value="0" oninput="renderSmall(event)" />
         Border
         <input oninput="renderSmall(event)" class="Bborder" type="range" min="0" max="1000" value="0" /><br>
         Border color
@@ -203,15 +135,21 @@
         </details> 
         </div>`;
 
-        // input section nam validation
+        // input section name validation
         if (inputValue === "") {
           alert("You must give a name to your section");
           return false;
         }
+        //regex validation
               let blockSpecialRegex = /[~`!@#$%^&()_={}[\]:;,.<>+\/?-]/;
               let numbers = /^[0-9][A-Za-z0-9 -]*$/;
+              let space = /[\s]+/; 
         if (inputValue.match(blockSpecialRegex)) {
           alert('Characters are not accepted as section name');
+          return false;
+        }
+                if (inputValue.match(space)) {
+          alert('Space on section name is not allowed');
           return false;
         }
                 if (inputValue.match(numbers)) {
@@ -278,9 +216,6 @@
       //loop throught all class array and create session storage values
       function renderSmall(e) {
         const kaka = e.currentTarget.parentElement.parentElement.className;
-        document
-          .querySelector(`.pageToDownload .${kaka}`)
-          .scrollIntoView({ behavior: "smooth" });
         for (let i = 0; i < AllClasses.length; i++) {
           if (e.target.className === "BimageFromC" && e.target.files[0].name) {
             randomvar = URL.createObjectURL(event.target.files[0]);
@@ -430,6 +365,7 @@
         padding: 0;
         box-sizing: border-box;
         overflow-x: hidden;
+        font-family: "Raleway", sans-serif;
         }
         </style>
         <body style="margin:0;padding:0; overflow-x: hidden;">
