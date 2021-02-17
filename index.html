@@ -36,28 +36,9 @@
       renderFirstPage();
 
       //super usefull array of all user input element class name , helps to loop everywhere bellow
-      const AllClasses = [
-        "title",
-        "TitleColor",
-        "TopTitle",
-        "LeftTitle",
-        "TitleSize",
-        "text",
-        "FontSize",
-        "TextColor",
-        "Bheight",
-        "Bwidth",
-        "Bopacity",
-        "LeftB",
-        "TopB",
-        "Bcolor",
-        "BborderC",
-        "Bborder",
-        "Bimage",
-        "BimageFromC",
-        "LeftText",
-        "TopText",
-      ];
+      const AllClasses = ["title","TitleColor","TopTitle","LeftTitle","TitleSize","text",
+"FontSize","TextColor","Bheight","Bwidth","Bopacity","LeftB","TopB","Bcolor","BborderC",
+"Bborder","Bimage","BimageFromC","LeftText","TopText",];
 
       // Create a "close" button and append it to each section item
       const myNodelist = document.getElementsByTagName("LI");
@@ -113,7 +94,7 @@
         <summary>Content</summary>
         <br>
         Add a title
-        <textarea wrap="off" oninput="renderSmall(event)" class="title" rows="4" cols="50" value=""></textarea>
+        <textarea wrap="off" placeholder="Your tittle" oninput="renderSmall(event)" class="title" rows="4" cols="50" value=""></textarea>
         Title color
         <input oninput="renderSmall(event)" class="TitleColor" type="color"  value="#999999" /><br>
           Title size
@@ -123,7 +104,7 @@
           Position from top
           <input type="range" class="TopTitle" min="-2000" max="2000" value="10" oninput="renderSmall(event)" /><br>
         Add a paragraph
-        <textarea wrap="off" oninput="renderSmall(event)" class="text" rows="4" cols="50" value=""></textarea>
+        <textarea wrap="off" placeholder="Your paragraph" oninput="renderSmall(event)" class="text" rows="4" cols="50" value=""></textarea>
         Paragraph color
         <input oninput="renderSmall(event)" class="TextColor" type="color"  value="#999999" /><br>
           font size
@@ -141,19 +122,19 @@
           return false;
         }
         //regex validation
-              let blockSpecialRegex = /[~`!@#$%^&()_={}[\]:;,.<>+\/?-]/;
-              let numbers = /^[0-9][A-Za-z0-9 -]*$/;
-              let space = /[\s]+/; 
+        let blockSpecialRegex = /[~`!@#$%^&()_={}[\]:;,.<>+\/?-]/;
+        let numbers = /^[0-9][A-Za-z0-9 -]*$/;
+        let space = /[\s]+/;
         if (inputValue.match(blockSpecialRegex)) {
-          alert('Characters are not accepted as section name');
+          alert("Characters are not accepted as section name");
           return false;
         }
-                if (inputValue.match(space)) {
-          alert('Space on section name is not allowed');
+        if (inputValue.match(space)) {
+          alert("Space on section name is not allowed");
           return false;
         }
-                if (inputValue.match(numbers)) {
-          alert('Numbers are not accepted as section name');
+        if (inputValue.match(numbers)) {
+          alert("Numbers are not accepted as section name");
           return false;
         }
         if (sections.find((element) => element === inputValue)) {
@@ -215,33 +196,32 @@
       //live update of preview page for css and content values
       //loop throught all class array and create session storage values
       function renderSmall(e) {
-        const kaka = e.currentTarget.parentElement.parentElement.className;
+        const currentLiClassName = e.currentTarget.parentElement.parentElement.className;
         for (let i = 0; i < AllClasses.length; i++) {
           if (e.target.className === "BimageFromC" && e.target.files[0].name) {
             randomvar = URL.createObjectURL(event.target.files[0]);
             sessionStorage.setItem(
-              `${kaka}-${e.currentTarget.className}`,
+              `${currentLiClassName}-${e.currentTarget.className}`,
               randomvar
             );
           }
           if (e.currentTarget.className === AllClasses[i]) {
             randomvar = e.currentTarget.value;
             sessionStorage.setItem(
-              `${kaka}-${e.currentTarget.className}`,
+              `${currentLiClassName}-${e.currentTarget.className}`,
               randomvar
             );
           }
         }
         if (e.currentTarget.className === "Bcolor") {
           Bcolor = e.currentTarget.value;
-          sessionStorage.setItem(`${kaka}-Bcolor`, Bcolor);
-          sessionStorage.removeItem(`${kaka}-Bimage`);
+          sessionStorage.setItem(`${currentLiClassName}-Bcolor`, Bcolor);
+          sessionStorage.removeItem(`${currentLiClassName}-Bimage`);
           document.querySelector(`.Bimage`).value = null;
-          sessionStorage.removeItem(`${kaka}-BimageFromC`);
+          sessionStorage.removeItem(`${currentLiClassName}-BimageFromC`);
           document.querySelector(`.BimageFromC`).value = null;
         }
-
-        renderPage(kaka);
+        renderPage(currentLiClassName);
       }
 
       //check the user add and image url , if yes, set it as a background
@@ -264,81 +244,88 @@
         }
       }
       //rendering page on input event on each input or texteria
-      function renderPage(kaka) {
+      function renderPage(currentLiClassName) {
         //SECTION style
-        document.querySelector(`.pageToDownload .${kaka}`).style.cssText = `
+        document.querySelector(`.pageToDownload .${currentLiClassName}`).style.cssText = `
         height:${
-          sessionStorage.getItem(`${kaka}-Bheight`)
-            ? `${sessionStorage.getItem(`${kaka}-Bheight`)}vh`
+          sessionStorage.getItem(`${currentLiClassName}-Bheight`)
+            ? `${sessionStorage.getItem(`${currentLiClassName}-Bheight`)}vh`
             : `40px`
         }; 
         width:${
-          sessionStorage.getItem(`${kaka}-Bwidth`)
-            ? `${sessionStorage.getItem(`${kaka}-Bwidth`)}vw`
+          sessionStorage.getItem(`${currentLiClassName}-Bwidth`)
+            ? `${sessionStorage.getItem(`${currentLiClassName}-Bwidth`)}vw`
             : `40px`
         };
         background-color:${
-          sessionStorage.getItem(`${kaka}-Bcolor`)
-            ? `${sessionStorage.getItem(`${kaka}-Bcolor`)}`
+          sessionStorage.getItem(`${currentLiClassName}-Bcolor`)
+            ? `${sessionStorage.getItem(`${currentLiClassName}-Bcolor`)}`
             : `#999999`
         };
-        opacity:${sessionStorage.getItem(`${kaka}-Bopacity`) ? sessionStorage.getItem(`${kaka}-Bopacity`) / 100 : `1`} ;
+        opacity:${
+          sessionStorage.getItem(`${currentLiClassName}-Bopacity`)
+            ? sessionStorage.getItem(`${currentLiClassName}-Bopacity`) / 100
+            : `1`
+        } ;
         position:absolute;
         overflow:visible;
         left:${
-          sessionStorage.getItem(`${kaka}-LeftB`)
-            ? `${sessionStorage.getItem(`${kaka}-LeftB`)}px`
+          sessionStorage.getItem(`${currentLiClassName}-LeftB`)
+            ? `${sessionStorage.getItem(`${currentLiClassName}-LeftB`)}px`
             : `0px`
         };
         top:${
-          sessionStorage.getItem(`${kaka}-TopB`)
-            ? `${sessionStorage.getItem(`${kaka}-TopB`)}px`
+          sessionStorage.getItem(`${currentLiClassName}-TopB`)
+            ? `${sessionStorage.getItem(`${currentLiClassName}-TopB`)}px`
             : `0px`
         };
-        ${imageExists(kaka)};
+        ${imageExists(currentLiClassName)};
         border:${
-          sessionStorage.getItem(`${kaka}-Bborder`)
-            ? `${sessionStorage.getItem(`${kaka}-Bborder`)}px`
-            : `0px`} solid ${sessionStorage.getItem(`${ kaka }-BborderC`)
-            ? `${ sessionStorage.getItem(`${kaka}-BborderC`) }`
-            : `#000000`};
+          sessionStorage.getItem(`${currentLiClassName}-Bborder`)
+            ? `${sessionStorage.getItem(`${currentLiClassName}-Bborder`)}px`
+            : `0px`
+        } solid ${
+          sessionStorage.getItem(`${currentLiClassName}-BborderC`)
+            ? `${sessionStorage.getItem(`${currentLiClassName}-BborderC`)}`
+            : `#000000`
+        };
         animation: newSection 2s forwards;
               `;
 
         //section content
-        document.querySelector(`.pageToDownload .${kaka}`).innerHTML = `
+        document.querySelector(`.pageToDownload .${currentLiClassName}`).innerHTML = `
         <pre> ${
-          sessionStorage.getItem(`${kaka}-title`)
-            ? sessionStorage.getItem(`${kaka}-title`)
+          sessionStorage.getItem(`${currentLiClassName}-title`)
+            ? sessionStorage.getItem(`${currentLiClassName}-title`)
             : ``
         }</pre>
         <pre> ${
-          sessionStorage.getItem(`${kaka}-text`)
-            ? sessionStorage.getItem(`${kaka}-text`)
+          sessionStorage.getItem(`${currentLiClassName}-text`)
+            ? sessionStorage.getItem(`${currentLiClassName}-text`)
             : ``
         }</pre>`;
 
         //title style
 
         document.querySelectorAll(
-          `.pageToDownload .${kaka} pre`
+          `.pageToDownload .${currentLiClassName} pre`
         )[0].style.cssText = `
         position:absolute;
          font-weight: 900;
-        color:${sessionStorage.getItem(`${kaka}-TitleColor`)};
-        font-size:${sessionStorage.getItem(`${kaka}-TitleSize`)}px;
-        left:${sessionStorage.getItem(`${kaka}-LeftTitle`)}px; 
-        top:${sessionStorage.getItem(`${kaka}-TopTitle`)}px;
+        color:${sessionStorage.getItem(`${currentLiClassName}-TitleColor`)};
+        font-size:${sessionStorage.getItem(`${currentLiClassName}-TitleSize`)}px;
+        left:${sessionStorage.getItem(`${currentLiClassName}-LeftTitle`)}px; 
+        top:${sessionStorage.getItem(`${currentLiClassName}-TopTitle`)}px;
                                            `;
         //paragraph style
         document.querySelectorAll(
-          `.pageToDownload .${kaka} pre`
+          `.pageToDownload .${currentLiClassName} pre`
         )[1].style.cssText = `
         position:absolute;
-        color:${sessionStorage.getItem(`${kaka}-TextColor`)};
-        font-size:${sessionStorage.getItem(`${kaka}-FontSize`)}px;
-        left:${sessionStorage.getItem(`${kaka}-LeftText`)}px; 
-        top:${sessionStorage.getItem(`${kaka}-TopText`)}px;
+        color:${sessionStorage.getItem(`${currentLiClassName}-TextColor`)};
+        font-size:${sessionStorage.getItem(`${currentLiClassName}-FontSize`)}px;
+        left:${sessionStorage.getItem(`${currentLiClassName}-LeftText`)}px; 
+        top:${sessionStorage.getItem(`${currentLiClassName}-TopText`)}px;
                                            `;
       }
 
