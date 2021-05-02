@@ -1,2 +1,2 @@
 # static-page-builder
-A tool that helps you build static html-css pages, with no code.
+A tool that helps you build static html-css pages-prototypes without coding.
