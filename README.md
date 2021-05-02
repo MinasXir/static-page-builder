@@ -1,2 +1,2 @@
 # static-page-builder
-A tool that helps you build static html-css pages-prototypes without coding.
+A tool build with vannila javascript, that helps you create static html-css pages-prototypes without coding.
